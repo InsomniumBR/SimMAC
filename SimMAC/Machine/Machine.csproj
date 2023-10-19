@@ -1,0 +1,289 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>7.10.3077</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2405A40E-A9A6-4AF2-B15B-843D1BFF055E}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon />
+    <AssemblyKeyContainerName />
+    <AssemblyName>Machine</AssemblyName>
+    <AssemblyOriginatorKeyFile />
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Machine</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject />
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>0.0</OldToolsVersion>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile />
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile />
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn />
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile />
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile />
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn />
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Buses\Bus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Buses\Bus1.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Buses\Bus16.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Buses\Bus2.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Buses\Bus32.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Buses\Bus4.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Buses\Bus8.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Buses\BusBID.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bit.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\ALU.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\AMUX.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\Component.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\Control.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\Shifter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\Incrementer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\LM.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\MAR.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\MBR.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\ControlMemory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\MemoryBlock.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\Mmux.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\MPC.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\SimStack.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Components\Track.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoders\Decoder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoders\DecoderA.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoders\DecoderB.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoders\DecoderC.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Latchs\Latch.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Latchs\LatchA.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Latchs\LatchB.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Machine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\A.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\ADDR.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\ALU.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\AMUX.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\B.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\C.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\COND.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\ENC.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\MAR.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\MBR.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\Mir.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\RD.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\SH.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MIR\WR.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\A.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\AC.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\AMask.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\B.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\C.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\D.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\E.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\F.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\IR.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\PlusOne.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\MinusOne.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\PC.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\Register.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\Registers.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\SMask.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\SP.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\TIR.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registers\Zero.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ProjectExtensions />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent />
+    <PostBuildEvent />
+  </PropertyGroup>
+</Project>
