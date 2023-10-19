@@ -1,0 +1,674 @@
+                             Mic1doc.txt
+
+         Documentation for the MIC1 Microprogramming Simulator
+
+                             Version 2.1
+
+                          Br. David Carlson
+
+                             October 2001
+
+
+
+
+Introduction and Overview:
+
+     This version of the Mic1 microprogramming simulator
+(mic1.exe, this mic1doc.txt file, and sample programs such as 
+mic001.txt) is made available as freeware so that others can 
+freely copy and use it. As usual, the entire risk in utilizing
+freeware lies with the user. The simulator runs under Windows, 
+requires a color monitor, and requires a screen resolution of at
+least 800 by 600. Specifically, the software was tested under
+Windows 95 and Windows 2000, but probably works under most
+other versions of Windows as well.
+
+     Mic1 simulates the execution of microprograms based on the
+example machine given in Ch. 4 of Andrew S. Tanenbaum's STRUCTURED
+COMPUTER ORGANIZATION, 3rd ed. (Prentice-Hall, 1990). Note that his
+memory-mapped I/O is not supported by the simulator and that the
+range of memory addresses handled is much more limited that what
+is used in his text. The simulator gives a visual display of what
+happens in each subcycle (or cycle, etc.) of the microprogram.
+This can be useful in  introducing students to microprogramming, 
+since it is something that they cannot usually try in practice. 
+With Mic1, students (or the instructor) can run small test 
+microprograms, or even Tanenbaum's Mic-1 microprogram which 
+interprets Mac-1 programs. (Mac-1 refers to his example 
+conventional machine level. Note that Tanenbaum's microprogram 
+interpreter has been modified to handle a Mac-1 HALT instruction.)
+
+     The simulator can be used in several ways with students in
+computer architecture & organization classes.  First, students
+can run some of the example microprograms provided with the
+simulator.  Then they can write and run their own microprograms.
+By using the microprogram interpreter that implements the Mac-1
+machine language, students can run Mac-1 machine language programs,
+whether those supplied with the simulator (such as mic003.txt) or
+ones they write themselves. The most challenging type of project,
+however, is to have students invent a new Mac-1 machine language
+instruction and then to implement it by rewriting the microprogram
+interpreter.  The author has used this as a contest in which
+part of the goal is to have students demonstrate their creativity
+in designing a useful Mac-1 instruction.
+
+
+User Customizations:
+
+     The simulator allows the user to adjust the font used and the
+size of the display. These adjustments can be found under the View
+menu and may be needed depending on the screen resolution that you
+are using. The software starts up with a guess at a reasonable font
+and the size of the simulator's display set at a default value
+of Large, but Medium or Small may work better in some settings.
+Adjust the font and size if need be until you get a readable display.
+
+
+What the Simulator Does:
+
+     The simulator shows a drawing of the registers, ALU, memory,
+etc. on the screen. The values stored in the registers, memory, and
+so on are also shown. When a value is first stored in some location
+it is shown in red to draw the user's attention to it. The user can
+click on various toolbar buttons to step through the execution of
+the microprogram. The choices include:
+
+Run for 1 subcycle (there are 4 subcycles in a cycle).
+Run for 1 cycle (normally executes 1 Mic-1 instruction, but if a
+     Mic-1 instruction has already been started, it takes you to the
+     start of the next Mic-1 instruction).
+Run 1 Mac-1 instruction (only available for Mac-1 programs).
+Run the current program without break until it ends.
+
+
+Sample programs:
+
+     The sample microprograms are stored in source files with names
+of the form micnnn.txt where nnn is a 3-digit integer. Several such
+files are supplied with the software. The main sample microprograms
+that are supplied with the simulator are numbered as follows:
+
+mic001.txt	A Mic-1 program that does a memory read and a push.
+mic002.txt	A Mic-1 program that does a read, boolean not, and
+		right shift.
+mic003.txt	A Mac-1 program that reads n, m, k, and then computes
+		and pushes n * m + k.
+mic004.txt	A Mac-1 program that calls a procedure (which adds
+		its parameter to itself).
+mic005.txt	A Mic-1 program that contains an error (illegal SH
+		field value).
+mic006.txt	A Mac-1 program that contains an error (a missing
+		register value).
+mic007.txt	A Mic-1 program that reads a number, adds it to 
+		itself, with overflow as the result. Note that, like
+		most machines, Mic1 does not report the overflow.
+		It is up to the user to notice it!
+mic008.txt	A Mic-1 program that illustrates a conditional jump
+		and how to do a subtraction.
+mic009.txt	Same program as mic008.txt, but with different data.
+mic013.txt	A Mic-1 program that does a memory read and a push,
+		but has an error in the read. (It tries to change the
+		mar register during the second cycle of the read.)
+mic014.txt	An incorrect Mic1 program that tries to do a write,
+		but loads the mar and mbr in the second write cycle
+		instead of the first.
+mic015.txt	A Mac-1 program that adds the constants 4 and 3, and
+		pushes the sum onto the stack.
+mic024.txt	An incorrect Mic1 program that tries to do a write
+		to an address in the Mac-1 code area of memory!
+
+
+How to Code a Microprogram:
+
+     To run a Mic-1 microprogram first code it in Tanenbaum's 
+micro assembly language (MAL) and then translate that into the
+corresponding binary values for the microinstruction fields. A 
+short example follows, given first in MAL:
+
+0:  mar := f; rd;           { load mar from register f }
+1:  rd;                     { read value into mbr }
+2:  ac := inv(mbr);         { boolean NOT }
+3:  ac := rshift(ac);       { right shift 1 bit }
+
+     The field values follow:
+
+AMUX COND ALU SH MBR MAR RD WR ENC   C     B     A       ADDR
+ 0    00  10  00  0   1  1  0   0   0000  1111  0000   0000 0000
+ 0    00  10  00  0   0  1  0   0   0000  0000  0000   0000 0000
+ 1    00  11  00  0   0  0  0   1   0001  0000  0000   0000 0000
+ 0    00  10  01  0   0  0  0   1   0001  0000  0001   0000 0000
+
+     The meanings of the fields are summarized as follows:
+
+AMUX	0 = use A latch value
+	1 = use MBR value
+
+COND	00 = no jump
+	01 = jump if N=1 (N Flag indicates a negative ALU output)
+	10 = jump if Z=1 (Z Flag inidcates a zero ALU output)
+	11 = jump always (unconditional jump)
+
+ALU	00 = A + B (add)
+	01 = A and B (bitwise boolean and)
+	10 = A (pass the left input straight on through the ALU)
+	11 = inv(A) (bitwise boolean not of the left input)
+
+SH	00 = no shift (just pass the input on through)
+	01 = shift right 1 bit
+	10 = shift left 1 bit
+	11 = (not used)
+
+MBR	0 = do not load the memory buffer register (MBR)
+	1 = load the MBR register from the C bus
+
+MAR	0 = do not load the memory address register (MAR)
+	1 = load the MAR using the 12 low order bits from B bus
+
+RD	0 = do not assert the read signal
+	1 = assert the read signal
+
+WR	0 = do not assert the write signal
+	1 = assert the write signal
+
+ENC	0 = do not assert the "enable C" signal
+	1 = assert the "enable C" signal (to load a register from
+	    the C bus)
+
+C	4 bit number specifying the register to be loaded from the
+	C bus
+
+B	4 bit number specifying the register whose contents are to
+	be gated onto the B bus
+
+A	4 bit number specifying the register whose contents are to
+	be gated onto the A bus
+
+ADDR	8 bit number specifying a microprogram address to jump to
+	(if a jump is called for, as shown in the COND field and 
+	based on the N Flag and Z Flag values)
+
+
+How to Run a Microprogram:
+
+     To actually run the Mic1 simulator for this example, prepare a
+text file for the program. Let us suppose we name the file mic002.txt
+(mic002.txt has actually been supplied with the software.) This file
+looks as follows:
+
+___________________________________________________________________________
+
+
+The mic002.txt data file.  Contains a Mic-1 program that does a read,
+boolean not, and a right shift.
+
+4 microinstructions:
+
+A   C
+M   O    A        M  M        E
+U   N    L    S   B  A  R  W  N     C        B        A          ADDR
+X   D    U    H   R  R  D  R  C
+
+0  0 0  1 0  0 0  0  1  1  0  0  0 0 0 0  1 1 1 1  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  0  0  1  0  0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+1  0 0  1 1  0 0  0  0  0  0  1  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 1  0  0  0  0  1  0 0 0 1  0 0 0 0  0 0 0 1  0 0 0 0 0 0 0 0
+
+0 Mac-1 instructions
+
+1 data item for main memory:
+
+-13108
+
+Register values:
+
+PC  AC  SP  IR  TIR  0  +1  -1  AMASK  SMASK  A  B  C  D  E  F
+
+0   0   69  0   0    0   1  -1  4095   255    0  0  0  0  0  40
+
+The MAL form of the above microinstructions follows:
+
+0:	mar := f; rd;
+1:	rd;
+2:	ac := inv(mbr);   (inv, short for inverse, is used to indicate a boolean not)
+3:	ac := rshift(ac);
+
+End of the mic002.txt data file.
+
+___________________________________________________________________________
+
+
+     Start the Mic1 simulator (for example, by double-clicking on its
+filename). Use File, Open or the Open button on the toolbar to select
+the mic002.txt program file to open. You can then use the subcycle
+button on the toolbar to step through the microprogram one subcycle
+at a time. If you do not need to see all of that detail, press the
+cycle button to do one cycle (one Mic-1 instruction) at a time. If all
+you want to see is the state of the machine at the end of the program,
+you can click on the button for running the program to the end. In
+any case, watch the values that show up in red to see what the
+microprogram does.
+
+
+Tracing a Microprogram:
+
+     Let's examine the mic002.txt file.  Register f begins with 40 in
+it. Thus our example microprogram loads the mar with 40. We therefore
+read MEM[40], which we know contains -13108, into the MBR. The
+program then takes boolean NOT of this number and then shifts that
+answer right 1 bit. Thus this microprogram is a simple test of
+memory read, boolean NOT, and right shift.
+
+     In tracing this program note the following:
+
+decimal number      16 bit 2's complement representation
+-13108              1100 1100 1100 1100
+ 13107              0011 0011 0011 0011  (NOT of -13108)
+  6553              0001 1001 1001 1001  (right shift 1 of 13107)
+
+
+Details of Memory, Registers, etc.:
+
+     The simulator can handle up to 144 microinstructions and 40
+Mac-1 instructions (starting at main memory location 0). There is
+room for 29 data items to be loaded into the simulated main memory,
+always starting at location 40. Each word of memory holds a 16-bit
+2's complement number, so that data items must fit the range of
+-32768 to 32767.
+
+     The 16 register values are also 16-bit 2's complement numbers
+and so must fit the same range. These are loaded into the
+microarchitecture's 16 registers (REG[0] through REG[15]). Note that
+REG[0] is the program counter (PC) for Mac-1 programs and hence
+should ordinarily be loaded with 0. REG[2] is the stack pointer (SP)
+and is normally loaded with 69 (one beyond the stack area of memory).
+The stack pushes back from 69 towards the start of the data area (40).
+Thus, if the stack is used, less than 29 regular data items can be
+put into memory. REG[5], REG[6], and REG[7] must be loaded with the
+constants 0, 1, and -1, respectively. REG[8] and REG[9] are AMASK
+and SMASK and must be loaded with 4095 and 255 respectively.
+
+     The main memory is thus set up as follows:
+
+                 Memory
+                ----------------------
+             0 |                      |
+               |                      |
+               | Mac-1 instructions   |
+               |                      |
+            39 |                      |
+               |----------------------|
+            40 | data items           |
+               |                      |
+               |                      |
+               |                      |
+            68 | stack                |
+                ----------------------
+      SP--> 69
+
+     Note that SP points to the top item on the stack. Thus SP = 69
+means that the stack is empty. Similarly, SP = N means that N-1 is
+the next location into which to push a value.
+
+
+General Layout of a micnnn.txt Program File:
+
+___________________________________________________________________________
+
+
+# of microinstructions
+
+the microinstructions (32 bits each, with spaces between bits)
+
+# of Mac-1 instructions
+
+the Mac-1 instructions (16 bits each, with spaces between bits)
+
+# of data items (with max of 29)
+
+the data items (with space between them -- can be on the same line
+	or on several lines)
+
+the 16 register values (with space between them, but MUST all be on
+	the SAME line)
+
+___________________________________________________________________________
+
+
+     Note that the simulator expects a line of data to begin with
+a digit in the first column. Comments can be placed after the counts
+(the # of microinstructions, the # of Mac-1 instructions, the # of
+data items). Comments can also be placed on lines containing nothing
+else at the start and end of the file, before and after the block of
+microinstructions, before and after the block of Mac-1 instructions,
+and before and after the data items. Do not put comments between
+instructions or at the start or end of an instruction line. Make
+sure that a line intended as a comment does not start with a number.
+
+
+What Happens in the Various Subcycles:
+
+     When the simulator is run, the microprogram and any Mac-1 program
+are read in. Any data items are read in, as are the register values. 
+Subcycle 1 simply fetches the next microinstruction (the one pointed
+to by the microinstruction counter MPC, which is originally set at 0)
+into the microinstruction register MIR. Subcycle 2 begins decoding
+the microinstruction and gates the specified register values onto the
+A and B buses. Subcycle 3 produces the left ALU input, ALU output, N
+and Z flag values, and shifter output (the value put on the C bus).
+It also loads the memory address register if called for.
+
+     Subcycle 4 can potentially do a lot. It stores the value on the
+C bus in a register and loads this value into the memory buffer
+register if either is called for. These decisions are based on the
+ENC and MBR fields respectively. Any jump is handled by this
+subcycle by resetting the MPC. The values of the negative (N) and
+zero (Z) flags for the ALU output are used to help to decide if the
+jump is taken. A memory read (or write) is done if the RD (WR)
+signal was present during both this and the previous micro-
+instruction. Thus two cycles are required to read the value in the
+memory location specified by the memory address register into the
+memory buffer register (similarly for a write). It is critical that
+the address in the memory address register remain constant throughout
+the 2 cycles that the RD (or WR) signal is asserted. At the end of
+the second cycle the read or write is completed (with the appropriate
+number read from memory into the memory buffer register or the value
+in the memory buffer register written to memory).
+
+     The simulator can continue to process microinstructions (each
+with the above 4 subcycles) until the MPC is incremented past the
+number of the last microinstruction (which is one less than the count
+of microinstructions you supplied in micnnn.txt). Thus the simulator
+sensibly refuses to run when the MPC has a value greater or equal to
+this count.
+
+
+How to Code and Run a Mac-1 Program:
+
+     To code and run a Mac-1 program, it is easiest to first write the
+Mac-1 program in Tanenbaum's Mac-1 assembly language and then to
+translate the Mac-1 instructions into binary. Use the Mac-1 instruction
+set table given further on in this file. Tanenbaum's instruction set
+has been extended to include one more instruction, namely HALT, which
+is encoded as 1111 1111 0000 0000. Note also that Tanenbaum's JPOS
+Mac-1 instruction is actually a "jump non-negative", as is clear from
+his Mic-1 program which interprets Mac-1 instructions. This entire
+microprogram interpreter is given in the data file mic015.txt. Note
+that this Mic-1 program has been modified to handle the HALT 
+instruction as follows (see Tanenbaum, pp. 190-191):
+
+73:  tir := lshift(tir); if n then goto 76;
+74:  a := band(ir, smask);                   { 1111 1100   INSP }
+75:  sp := sp + a; goto 0;
+76:  alu := tir; if n then goto 80;          { 1111 1111   HALT }
+77:  a := band(ir, smask);                   { 1111 1110   DESP }
+78:  a := inv(a);
+79:  a := a + 1; goto 75;
+
+     The example Mac-1 program just mentioned is given below.  The
+source file, mic015.txt, is supplied with the software. Note that
+the microprogram in this data file is the promised microprogram 
+which interprets a Mac-1 program. Use the microprogram from this 
+mic015.txt file, then, whenever you wish to interpret a Mac-1 
+program. Note that when a Mac-1 program is present, the simulator
+will say so on the screen. Note, too, that when running a Mac-1 
+program the simulator enables the toolbar button that allows you
+to step through the program one whole Mac-1 instruction at a time.
+
+	The mic015.txt data file contains a simple Mac-1 program that
+adds the constants 4 and 3, and pushes the sum onto the stack. The
+assembly language version of the program is written below, with
+brief comments explaining each line of code:
+
+0:  LOCO 4		{ load the constant 4 into the accumulator (AC) }
+1:  STOD 40		{ store the AC value directly at MEM[40] }
+2:  LOCO 3		{ load the constant 3 into the accumulator }
+3:  ADDD 40		{ add to the AC value what's directly in MEM[40] )
+4:  PUSH		{ push the AC value onto the stack }
+5:  HALT
+     
+	Here is a picture of what's in memory when this program
+finishes executing:
+
+             Memory
+                 ---------------
+              0 |               |
+                |               |
+                | Mac-1 program |
+                |               |
+             39 |               |
+                |---------------|
+             40 | 4             |  (data)
+                |---------------|
+                |               |
+                |               |
+                |---------------|
+      SP-->  68 | 7             |  (stack)
+                 ---------------
+
+___________________________________________________________________________
+
+
+The mic015.txt data file.  Contains a Mac-1 program that adds the
+constants 4 and 3, and pushes the sum onto the stack.
+
+80 microinstructions:
+
+A   C
+M   O    A        M  M        E
+U   N    L    S   B  A  R  W  N     C        B        A          ADDR
+X   D    U    H   R  R  D  R  C
+
+0  0 0  1 0  0 0  0  1  1  0  0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  0 0  0 0  0  0  1  0  1  0 0 0 0  0 0 0 0  0 1 1 0  0 0 0 0 0 0 0 0
+1  0 1  1 0  0 0  0  0  0  0  1  0 0 1 1  0 0 0 0  0 0 0 0  0 0 0 1 1 1 0 0
+0  0 1  0 0  1 0  0  0  0  0  1  0 1 0 0  0 0 1 1  0 0 1 1  0 0 0 1 0 0 1 1
+0  0 1  1 0  1 0  0  0  0  0  1  0 1 0 0  0 0 0 0  0 1 0 0  0 0 0 0 1 0 1 1
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 0 0 1 0 0 1
+0  0 0  1 0  0 0  0  1  1  0  0  0 0 0 0  0 0 1 1  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  0  0  1  0  0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+1  1 1  1 0  0 0  0  0  0  0  1  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  1  1  0  1  0  0 0 0 0  0 0 1 1  0 0 0 1  0 0 0 0 0 0 0 0
+0  1 1  1 0  0 0  0  0  0  1  0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 0 0 1 1 1 1
+0  0 0  1 0  0 0  0  1  1  0  0  0 0 0 0  0 0 1 1  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  0  0  1  0  0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+1  1 1  0 0  0 0  0  0  0  0  1  0 0 0 1  0 0 0 1  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  0  1  1  0  0  0 0 0 0  0 0 1 1  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  0 0  0 0  0  0  1  0  1  0 0 0 1  0 0 0 1  0 1 1 0  0 0 0 0 0 0 0 0
+1  0 0  1 1  0 0  0  0  0  0  1  1 0 1 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  1 1  0 0  0 0  0  0  0  0  1  0 0 0 1  0 0 0 1  1 0 1 0  0 0 0 0 0 0 0 0
+0  0 1  1 0  1 0  0  0  0  0  1  0 1 0 0  0 0 0 0  0 1 0 0  0 0 0 1 1 0 0 1
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 0 1 0 1 1 1
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0 0 0 0 0
+0  1 1  0 1  0 0  0  0  0  0  1  0 0 0 0  0 0 1 1  1 0 0 0  0 0 0 0 0 0 0 0
+0  1 0  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 0 1 0 1 1 0
+0  1 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 0 1 1 0 1 1
+0  1 1  0 1  0 0  0  0  0  0  1  0 0 0 0  0 0 1 1  1 0 0 0  0 0 0 0 0 0 0 0
+0  1 1  0 1  0 0  0  0  0  0  1  0 0 0 1  0 0 1 1  1 0 0 0  0 0 0 0 0 0 0 0
+0  0 1  0 0  1 0  0  0  0  0  1  0 1 0 0  0 0 1 1  0 0 1 1  0 0 1 0 1 0 0 0
+0  0 1  1 0  1 0  0  0  0  0  1  0 1 0 0  0 0 0 0  0 1 0 0  0 0 1 0 0 0 1 1
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 1 0 0 0 0 1
+0  0 0  0 0  0 0  0  0  0  0  1  1 0 1 0  0 0 1 1  0 0 1 0  0 0 0 0 0 0 0 0
+0  1 1  1 0  0 0  0  1  1  0  0  0 0 0 0  1 0 1 0  0 0 0 0  0 0 0 0 0 1 1 1
+0  0 0  0 0  0 0  0  0  0  0  1  1 0 1 0  0 0 1 1  0 0 1 0  0 0 0 0 0 0 0 0
+0  1 1  1 0  0 0  1  1  0  1  0  0 0 0 0  1 0 1 0  0 0 0 1  0 0 0 0 1 0 1 0
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 1 0 0 1 1 0
+0  0 0  0 0  0 0  0  0  0  0  1  1 0 1 0  0 0 1 1  0 0 1 0  0 0 0 0 0 0 0 0
+0  1 1  1 0  0 0  0  1  1  0  0  0 0 0 0  1 0 1 0  0 0 0 0  0 0 0 0 1 1 0 1
+0  0 0  0 0  0 0  0  0  0  0  1  1 0 1 0  0 0 1 1  0 0 1 0  0 0 0 0 0 0 0 0
+0  1 1  1 0  0 0  0  1  1  0  0  0 0 0 0  1 0 1 0  0 0 0 0  0 0 0 1 0 0 0 0
+0  0 1  1 0  1 0  0  0  0  0  1  0 1 0 0  0 0 0 0  0 1 0 0  0 0 1 0 1 1 1 0
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 1 0 1 1 0 0
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 0 1 0 1 1 0
+0  1 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  1 0  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0 0 0 0 0
+0  1 1  0 1  0 0  0  0  0  0  1  0 0 0 0  0 0 1 1  1 0 0 0  0 0 0 0 0 0 0 0
+0  0 1  1 0  1 0  0  0  0  0  1  0 1 0 0  0 0 0 0  0 1 0 0  0 0 1 1 0 0 1 0
+0  0 0  0 0  0 0  0  0  0  0  1  0 0 1 0  0 1 1 1  0 0 1 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  1  1  0  1  0  0 0 0 0  0 0 1 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  1 1  0 1  0 0  0  0  0  1  1  0 0 0 0  0 0 1 1  1 0 0 0  0 0 0 0 0 0 0 0
+0  0 1  1 0  1 0  0  0  0  0  1  0 1 0 0  0 0 0 0  0 1 0 0  0 1 0 0 0 0 0 1
+0  0 1  1 0  1 0  0  0  0  0  1  0 1 0 0  0 0 0 0  0 1 0 0  0 0 1 1 1 0 1 1
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 1 1 1 0 0 0
+0  0 0  1 0  0 0  0  1  1  0  0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  0 0  0 0  0  0  1  0  1  0 0 1 0  0 1 1 1  0 0 1 0  0 0 0 0 0 0 0 0
+0  1 1  1 0  0 0  0  1  0  1  0  0 0 0 0  0 0 1 0  0 0 0 0  0 0 0 0 1 0 1 0
+0  0 0  0 0  0 0  0  1  1  0  1  0 0 1 0  0 0 1 0  0 1 1 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  0  0  1  0  0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  1 1  1 0  0 0  0  1  0  1  0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0 1 0 1 0
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 1 1 1 1 1 0
+0  0 0  0 0  0 0  0  0  0  0  1  0 0 1 0  0 1 1 1  0 0 1 0  0 0 0 0 0 0 0 0
+0  1 1  1 0  0 0  1  1  0  1  0  0 0 0 0  0 0 1 0  0 0 0 1  0 0 0 0 1 0 1 0
+0  0 0  0 0  0 0  0  1  1  0  1  0 0 1 0  0 0 1 0  0 1 1 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  0  0  1  0  0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+1  1 1  1 0  0 0  0  0  0  0  1  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 1  1 0  1 0  0  0  0  0  1  0 1 0 0  0 0 0 0  0 1 0 0  0 1 0 0 1 0 0 1
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 1 0 0  0 1 0 0 0 1 1 0
+0  0 0  0 0  0 0  0  1  1  0  1  0 0 1 0  0 0 1 0  0 1 1 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  0  0  1  0  0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+1  1 1  1 0  0 0  0  0  0  0  1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  0  0  0  0  1  1 0 1 0  0 0 0 0  0 0 0 1  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  0  0  0  0  1  0 0 0 1  0 0 0 0  0 0 1 0  0 0 0 0 0 0 0 0
+0  1 1  1 0  0 0  0  0  0  0  1  0 0 1 0  0 0 0 0  1 0 1 0  0 0 0 0 0 0 0 0
+0  0 1  1 0  1 0  0  0  0  0  1  0 1 0 0  0 0 0 0  0 1 0 0  0 1 0 0 1 1 0 0
+0  0 0  0 1  0 0  0  0  0  0  1  1 0 1 0  0 0 1 1  1 0 0 1  0 0 0 0 0 0 0 0
+0  1 1  0 0  0 0  0  0  0  0  1  0 0 1 0  0 0 1 0  1 0 1 0  0 0 0 0 0 0 0 0
+0  0 1  1 0  0 0  0  0  0  0  0  0 0 0 0  0 0 0 0  0 1 0 0  0 1 0 1 0 0 0 0
+0  0 0  0 1  0 0  0  0  0  0  1  1 0 1 0  0 0 1 1  1 0 0 1  0 0 0 0 0 0 0 0
+0  0 0  1 1  0 0  0  0  0  0  1  1 0 1 0  0 0 0 0  1 0 1 0  0 0 0 0 0 0 0 0
+0  1 1  0 0  0 0  0  0  0  0  1  1 0 1 0  1 0 1 0  0 1 1 0  0 1 0 0 1 0 1 1
+
+6 Mac-1 instructions:
+
+0 1 1 1   0 0 0 0   0 0 0 0   0 1 0 0
+0 0 0 1   0 0 0 0   0 0 1 0   1 0 0 0
+0 1 1 1   0 0 0 0   0 0 0 0   0 0 1 1
+0 0 1 0   0 0 0 0   0 0 1 0   1 0 0 0
+1 1 1 1   0 1 0 0   0 0 0 0   0 0 0 0
+1 1 1 1   1 1 1 1   0 0 0 0   0 0 0 0
+
+0 data items for main memory:
+
+Register values:
+
+PC  AC  SP  IR  TIR  0  +1  -1  AMASK  SMASK  A  B  C  D  E  F
+
+0   0   69  0   0    0   1  -1  4095   255    0  0  0  0  0  0
+
+The Mac-1 program can be summarized as follows:
+
+0:  LOCO 4
+1:  STOD 40
+2:  LOCO 3
+3:  ADDD 40
+4:  PUSH
+5:  HALT
+
+End of the mic015.txt data file.
+
+___________________________________________________________________________
+
+
+Mac-1 Instruction Set
+
+
+	Note that xxxx xxxx xxxx denotes a 12 bit constant called x for
+short and that yyyy yyyy denotes an 8 bit constant called y for short.
+The meaning of each instruction is described in Pascal-like notation below
+each Mac-1 instruction.
+
+LODD		0000 xxxx xxxx xxxx		load direct
+	ac := m[x]
+STOD		0001 xxxx xxxx xxxx		store direct
+	m[x] := ac
+ADDD		0010 xxxx xxxx xxxx		add direct
+	ac := ac + m[x]
+SUBD		0011 xxxx xxxx xxxx		subtract direct
+	ac := ac - m[x]
+JPOS		0100 xxxx xxxx xxxx		jump positive
+	if ac >= 0 then pc := x			(really a jump non-negative)
+JZER		0101 xxxx xxxx xxxx		jump zero
+	if ac = 0 then pc := x
+JUMP		0110 xxxx xxxx xxxx		jump always
+	pc := x
+LOCO		0111 xxxx xxxx xxxx		load constant
+	ac := x	(where 0 <= x <= 4095)
+LODL		1000 xxxx xxxx xxxx		load local
+	ac := m[sp + x]
+STOL		1001 xxxx xxxx xxxx		store local
+	m[x + sp] := ac
+ADDL		1010 xxxx xxxx xxxx		add local
+	ac := ac + m[sp + x]
+SUBL		1011 xxxx xxxx xxxx		subtract local
+	ac := ac - m[sp + x]
+JNEG		1100 xxxx xxxx xxxx		jump negative
+	if ac < 0 then pc := x
+JNZE		1101 xxxx xxxx xxxx		jump nonzero
+	if ac <> 0 then pc := x
+CALL		1110 xxxx xxxx xxxx		call a procedure
+	sp := sp - 1; m[sp] := pc; pc := x
+PSHI		1111 0000 0000 0000		push indirect
+	sp := sp - 1; m[sp] := m[ac]
+POPI		1111 0010 0000 0000		pop indirect
+	m[ac] := m[sp]; sp := sp + 1
+PUSH		1111 0100 0000 0000		push onto stack
+	sp := sp - 1; m[sp] := ac
+POP		1111 0110 0000 0000		pop from stack
+	ac := m[sp]; sp := sp + 1
+RETN		1111 1000 0000 0000		return from a procedure
+	pc := m[sp]; sp := sp + 1
+SWAP		1111 1010 0000 0000		swap ac and sp
+	tmp := ac; ac := sp; sp := tmp
+INSP		1111 1100 yyyy yyyy		increment sp
+	sp := sp + y	(where 0 <= y <= 255)
+DESP		1111 1110 yyyy yyyy		decrement sp
+	sp := sp - y	(where 0 <= y <= 255)
+HALT		1111 1111 yyyy yyyy		halts the simulator (y unused)
+
+Note that some bit patterns are still available for new Mac-1 instructions.
+These all involve the eight bit from the left.  For example, we could use
+the bit pattern 1111 1101 for a new Mac-1 instruction if we rewrite the
+microprogram interpreter to correctly distinguish between 1111 1100 (INSP)
+and 1111 1101 (the new instruction).  Similarly, we could use 1111 1011 if
+we distinguish it from 1111 1010 (SWAP).
+
+
+Differences Between This and Previous Versions of the Mic1 Simulator:
+
+        Version 2.1 fixed some problems that version 2.0 had in producing
+        a reasonably-sized screen image, especially under Windows 2000.
+
+	Versions 2.1 and 2.0 are Windows programs, whereas the earlier
+        version 1.1 was a DOS program.
+
+	The toolbar is now used instead of function keys.
+
+	The sample programs are now named with the .txt extension.
+
+	A 1 in the Subcycle box on the screen indicates that the
+	simulator is ready to execute subcycle 1 (similarly for
+	2, 3, or 4). In version 1.1, this number indicated the
+	subcycle just completed. The new method is intended to
+	be consistent with the MPC value shown nearby, as it gives
+	the number of the microinstruction to be executed next.
+
+	The simulator now displays most values in binary, not decimal.
+
+	It can now handle a microprogram up to 144 lines long (whereas
+	the previous version had a limit of 120).
+
+	The simulated main memory is now larger. The area for any
+	Mac-1 program now runs from locations 0 to 39 (not 0 to 19)
+	and the area for data values runs from 40 to 68 (not 20 to
+	40). This means that the SP register should normally start
+	with a value of 69, not the old 41. Old microprograms that
+	accessed data values at locations 20, 21, etc. must be
+	modified to use locations 40, 41, etc.
+
+	The N Flag and Z Flag values are now set in subcycle 3, not
+	subcycle 4. This makes more sense as the ALU output becomes
+	stable in subcycle 3.
+
+	Versions 2.1 and 2.0 are freeware, whereas version 1.1 was public
+        domain software. The source code is not supplied with the new version.

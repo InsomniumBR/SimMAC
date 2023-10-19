@@ -1,0 +1,28 @@
+The mic005.txt data file.  It will give an error since the first
+microinstruction contains an illegal SH field value of 3.
+
+4 microinstructions:
+
+A   C
+M   O    A        M  M        E
+U   N    L    S   B  A  R  W  N     C        B        A          ADDR
+X   D    U    H   R  R  D  R  C
+
+0  0 0  1 0  1 1  0  1  1  0  0  0 0 0 0  1 1 1 1  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 0  0  0  1  0  0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+1  0 0  1 1  0 0  0  0  0  0  1  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0 0 0 0 0
+0  0 0  1 0  0 1  0  0  0  0  1  0 0 0 1  0 0 0 0  0 0 0 1  0 0 0 0 0 0 0 0
+
+0 Mac-1 instructions:
+
+1 data item for main memory:
+
+-13108
+
+Register values:
+
+PC  AC  SP  IR  TIR  0  +1  -1  AMASK  SMASK  A  B  C  D  E  F
+
+0   0   69  0   0    0   1  -1  4095   255    0  0  0  0  0  40
+
+End of the mic005.txt data file.
